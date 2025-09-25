@@ -1,0 +1,21 @@
+{
+  "name": "collide",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "@codemirror/basic-setup": "^0.20.0",
+    "@codemirror/lang-javascript": "^6.2.4",
+    "ably": "^2.13.0",
+    "dotenv": "^17.2.2",
+    "express": "^5.1.0"
+  }
+}

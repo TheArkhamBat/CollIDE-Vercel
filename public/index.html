@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CollIDE - Collaborative IDE</title>
+    <!-- Import CodeMirror editor for in-browser code editor -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.15/codemirror.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.15/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.15/mode/javascript/javascript.min.js"></script>
+    <!-- Dark theme for CodeMirror -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.15/theme/material.min.css"> 
+    <!-- import tailwind -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/pyodide/v0.25.1/full/pyodide.js"></script>
+    <script src="https://cdn.ably.com/lib/ably.min-1.js"></script>
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+        textarea {
+            resize: none;
+            font-family: 'Inter', monospace;
+        }
+        html, body {
+            height: 100%;
+            margin: 0;
+            overflow: hidden; 
+        }
+        /* Core CodeMirror container */
+        .CodeMirror {
+            background-color: #0f172a; /* Tailwind's bg-gray-900 */
+            color: #f1f5f9;            /* Tailwind's text-slate-100 */
+            font-family: 'Fira Code', 'Inter', monospace;
+            font-size: 0.875rem;       /* Tailwind's text-sm */
+            height: 100% !important;
+            border-radius: 0.5rem;
+        }
+
+        /* Scrollbar inside the editor */
+        .CodeMirror-scroll {
+            overflow: auto;
+        }
+
+        /* Line number gutter */
+        .CodeMirror-gutters {
+            background-color: #1e293b; /* bg-gray-800 */
+            color: #94a3b8;            /* text-slate-400 */
+            border-right: 1px solid #334155; /* border-gray-700 */
+        }
+
+        .CodeMirror-linenumber {
+            color: #64748b; /* text-slate-500 */
+        }
+
+        /* Selection */
+        .CodeMirror-selected {
+            background-color: rgba(59, 130, 246, 0.25); /* blue-500 with opacity */
+        }
+
+        /* Matching brackets */
+        .CodeMirror-matchingbracket {
+            color: #facc15;       /* yellow-400 */
+            font-weight: bold;
+            background-color: rgba(250, 204, 21, 0.1); /* translucent yellow */
+        }
+
+        /* Cursor */
+        .CodeMirror-cursor {
+            border-left: 2px solid #38bdf8; /* cyan-400 */
+        }
+
+        /* Line highlight (optional) */
+        .CodeMirror-activeline-background {
+            background: rgba(255, 255, 255, 0.05); /* soft highlight */
+        }
+
+        /* Autocomplete popup (if using hints addon) */
+        .CodeMirror-hints {
+            background-color: #1e293b;
+            color: #f1f5f9;
+            border: 1px solid #334155;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.875rem;
+        }
+
+        .CodeMirror-hint-active {
+            background-color: #334155;
+        }
+
+        #connect-modal {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: #334155;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.5);
+        z-index: 1000;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+
+        min-width: 300px;
+        min-height: 180px; 
+        justify-content: space-evenly;
+    }
+
+    </style>
+    
+</head>
+<body class="font-sans bg-gray-900 text-gray-100 flex flex-col h-screen">
+    <header>
+        <div class="logo">
+            <span class="logo-blue">Coll</span><span class="logo-white">IDE</span>
+        </div>
+        <div id="room-info" style="display: none; margin-top: 10px;">
+            Room ID: <span id="room-id-display" style="font-weight: bold;"></span>
+        </div>
+
+        <div class="user-info">
+            <span class="user-count-text">Connected Users: <span id="user-count">0</span></span>
+            
+            <div id="user-list" class="flex items-center gap-2 ml-4"></div>
+            <div id="typing-indicator"></div>
+            <!--UPLOAD AND DOWNLOAD YEEEHAWWWWW!!!MURRICAAAAAA!!!!-->
+            <div class="user-info">
+                <!-- <input type="text" id="username-input" placeholder="Enter your username">
+                <button id="connectc-button">
+                    Connect
+                </button> -->
+                
+                <button id="upload-btn" style="margin-left: 1rem;">Upload</button>
+                <button id="download-btn">Download</button>
+                <input type="file" id="file-input" style="display: none;" accept=".py,.js,.txt,.html,.css">
+            </div>
+            <!--UPLOAD AND DOWNLOAD YEEEHAWWWWW!!!MURRICAAAAAA!!!!-->
+        </div>
+        <div id="connect-modal">
+                <input type="text" class="input" id="username-input" placeholder="Enter your username">
+                <input id="room-id-input" class="input" type="text" maxlength="6" pattern="\d{6}" placeholder="Enter Room ID (optional)">
+                <button id="connect-button" style="margin-top: 20px;">
+                    Connect
+                </button>
+        </div>
+
+    </header>
+    <main>
+        <div class="editor-panel flex flex-col flex-1">
+        <div class="panel-header flex justify-between items-center py-2">
+    <p class="font-semibold">Code Editor</p>
+    <!-- This new div groups the buttons together -->
+    <div class="run-buttons-container">
+        <button id="run-button">Run JavaScript</button>
+        <button id="run-python-button">Run Python</button>
+    </div>
+    </div>
+        <textarea id="codespace" placeholder="Start coding here..."></textarea>
+        </div>
+        <div class="editor-panel">
+            <div class="panel-header">Scratchpad</div>
+            <textarea id="scratchpad" placeholder="Jot down notes or ideas here..."></textarea>
+        </div>
+        <!-- Resizable Output Panel -->
+        <div id="output-panel" class="hidden absolute bottom-0 left-0 right-0 bg-black text-green-400 shadow-lg">
+            <div id="drag-handle" class="h-2 cursor-row-resize bg-gray-700"></div>
+            <pre id="output" class="p-2 overflow-y-auto h-full"></pre>
+        </div>
+
+
+    </main>
+    <script src="script.js"></script>
+</body>
+</html>

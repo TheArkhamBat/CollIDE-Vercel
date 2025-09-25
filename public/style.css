@@ -1,0 +1,183 @@
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: #1a202c;
+    color: #e2e8f0;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    margin: 0;
+    overflow: hidden;
+}
+
+header {
+    background-color: #2d3748;
+    padding: 1rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.logo-blue {
+    color: #63b3ed;
+}
+
+.logo-white {
+    color: #ffffff;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.user-count-text {
+    font-size: 0.875rem;
+    color: #a0aec0;
+}
+
+
+.user-tag {
+    background-color: #3182ce; 
+    color: #ffffff;
+    padding: 0.25rem 0.75rem; 
+    border-radius: 9999px;      
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.input {
+    padding: 0.5rem;
+    border-radius: 0.375rem;
+    background-color: #4a5568;
+    color: #ffffff;
+    border: none;
+    outline: none;
+    box-sizing: border-box;
+    margin: 5px;
+}
+
+.input::placeholder {
+    color: #a0aec0;
+}
+
+.input:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px #4299e1;
+}
+
+#connect-button {
+    background-color: #3182ce;
+    color: #ffffff;
+    font-weight: 600;
+    padding: 0.5rem 1rem;
+    border-radius: 0.375rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    transition: background-color 0.3s ease-in-out;
+    border: none;
+    cursor: pointer;
+}
+
+#run-button{
+    background-color: #3182ce;
+    color:white ;
+    padding: 0.25rem 0.75rem;
+    border-radius: 0.25rem;}
+#run-button:hover{
+    background-color: #2b6cb0;
+}
+
+#connect-button:hover {
+    background-color: #2b6cb0;
+}
+
+
+main {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+}
+
+.editor-panel {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background-color: #2d3748;
+    border-right: 1px solid #4a5568;
+}
+
+.editor-panel:last-child {
+    border-right: none;
+}
+
+.panel-header {
+    padding: 0.75rem;
+    background-color: #4a5568;
+    color: #ffffff;
+    font-size: 1.125rem;
+    font-weight: 600;
+    border-bottom: 1px solid #2d3748;
+}
+
+textarea {
+    flex: 1;
+    padding: 1rem;
+    background-color: #1a202c;
+    color: #ffffff;
+    font-size: 0.875rem;
+    outline: none;
+    border: none;
+    resize: none;
+}
+
+#codespace {
+    border-bottom-left-radius: 0.5rem;
+}
+
+#scratchpad {
+    border-bottom-right-radius: 0.5rem;
+}
+
+textarea:focus {
+    outline: none;
+}
+
+
+#typing-indicator {
+    font-size: 0.8rem;
+    color: #a0aec0;
+    font-style: italic;
+    min-height: 1.2rem; /* Prevents header from jumping in size */
+    margin-left: 1rem;
+}
+
+#output-panel {
+  min-height: 50px;
+  max-height: 80%;
+}
+
+/* At the bottom of style.css */
+#run-python-button {
+    background-color: #28a745; /* A green color to differentiate */
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 0.25rem;
+    margin-left: 0.5rem; /* Add some space */
+    border: none;
+    cursor: pointer;
+}
+
+#run-python-button:hover {
+    background-color: #218838;
+}
+
+#run-python-button:disabled {
+    background-color: #5a6268;
+    cursor: not-allowed;
+}
