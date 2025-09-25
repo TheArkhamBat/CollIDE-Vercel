@@ -1,3 +1,5 @@
+const path = require('path');
+
 // Load the secret API key from our .env file
 require('dotenv').config();
 
@@ -9,7 +11,7 @@ const app = express();
 const http = require('http').createServer(app);
 
 // Serve all the files in the 'public' folder
-app.use(express.static('public'));
+app.use(express.static(path.join(__dirname, 'public')));
 
 // This is a new endpoint for clients to get the public part of the API key
 // It's a safer way than putting the whole key in your frontend code
